@@ -1,9 +1,33 @@
+import 'package:agora_test/api.dart';
 import 'package:agora_test/video_call.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification!.body}');
+      }
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) {
+         return const VideoCallScreen();
+        })
+      );
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,10 +61,16 @@ class HomeScreen extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {
+                    DioHelper.pushNotification().then((value){
+                      print("PUSHED DONE");
+                    }).catchError((error){
+                      print("ERROR DONE =====> ${error.toString()}");
+                    });
                     Navigator.push(
                     context,
                     MaterialPageRoute(
-                    builder: (context) => const VideoCallScreen()));
+                    builder: (context) => const VideoCallScreen())
+                    );
                   },
                   icon: const Icon(
                     Icons.video_call,
