@@ -1,5 +1,6 @@
+import 'package:agora_test/agora_server.dart';
 import 'package:agora_test/api.dart';
-import 'package:agora_test/home_screen.dart';
+import 'package:agora_test/pages/home.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   DioHelper.init();
+  AgoraHelper.init();
   String? token = await FirebaseMessaging.instance.getToken();
   print(token);
   runApp(const MyApp());

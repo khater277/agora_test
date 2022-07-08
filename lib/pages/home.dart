@@ -1,8 +1,11 @@
+import 'package:agora_test/agora_server.dart';
 import 'package:agora_test/api.dart';
-import 'package:agora_test/video_call.dart';
+import 'package:agora_test/pages/video_call.dart';
+import 'package:agora_test/utils/app_brain.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:agora_rtc_engine/rtc_channel.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -20,11 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification!.body}');
       }
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (BuildContext context) {
-         return const VideoCallScreen();
-        })
-      );
+      // Navigator.of(context).push(
+      //     MaterialPageRoute(builder: (BuildContext context) {
+      //       return VideoCallScreen(channelName: message.data['cannelName'],);
+      //     })
+      // );
     });
     super.initState();
   }
@@ -61,16 +64,23 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 IconButton(
                   onPressed: () {
-                    DioHelper.pushNotification().then((value){
-                      print("PUSHED DONE");
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => VideoCallScreen()));
+                    AgoraHelper.getToken().then((value){
+                      print("GET DATA SUCCESS ${value.data['token']}");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoCallScreen(
+                                token: value.data['token'],
+                                channelName: 'asd',
+                                uid: 3,
+                              )));
                     }).catchError((error){
-                      print("ERROR DONE =====> ${error.toString()}");
+                      print("GET DATA ERROR ${error.toString()}");
                     });
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (context) => const VideoCallScreen())
-                    );
                   },
                   icon: const Icon(
                     Icons.video_call,
@@ -80,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 IconButton(
                   onPressed: () {
+
                     // Navigator.push(
                     // context,
                     // MaterialPageRoute(

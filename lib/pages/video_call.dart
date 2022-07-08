@@ -1,12 +1,15 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:agora_test/app_brain.dart';
+import 'package:agora_test/utils/app_brain.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 
 class VideoCallScreen extends StatefulWidget {
-  const VideoCallScreen({Key? key}) : super(key: key);
+  final String token;
+  final String channelName;
+  final int uid;
+  const VideoCallScreen({Key? key, required this.token, required this.channelName, required this.uid, }) : super(key: key);
 
   @override
   State<VideoCallScreen> createState() => _VideoCallScreenState();
@@ -23,26 +26,27 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _engine = await RtcEngine.create(AgoraManager.appId);
     _engine.enableVideo();
     _engine.setEventHandler(
-      RtcEngineEventHandler(
-        joinChannelSuccess:(String channel,int uid,int elapsed){
-          print("joinChannelSuccess to $channel id $uid elapsed $elapsed");
-        },
-        userJoined: (int uid,int elapsed){
-          print("userJoined id $uid elapsed $elapsed");
-          setState(()=>_remoteID = uid);
-        },
-        userOffline: (int uid,UserOfflineReason reason){
-          print("userOffline id $uid reason ${reason.toString()}");
-          setState(()=>_remoteID = 0);
-          Navigator.of(context).pop();
-        }
-      )
+        RtcEngineEventHandler(
+            joinChannelSuccess:(String channel,int uid,int elapsed){
+              print("joinChannelSuccess to $channel id $uid elapsed $elapsed");
+            },
+            userJoined: (int uid,int elapsed){
+              print("userJoined id $uid elapsed $elapsed");
+              setState(()=>_remoteID = uid);
+            },
+            userOffline: (int uid,UserOfflineReason reason){
+              print("userOffline id $uid reason ${reason.toString()}");
+              setState(()=>_remoteID = 0);
+              Navigator.of(context).pop();
+            }
+        )
     );
+
     await _engine.joinChannel(
-        AgoraManager.token,
-        AgoraManager.channelName,
+        widget.token,
+        widget.channelName,
         null,
-        0
+        widget.uid
     );
 
   }
@@ -108,9 +112,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
   Widget _renderRemoteVideo(){
     if(_remoteID!=0) {
       return RtcRemoteView.SurfaceView(
-      uid: _remoteID,
-      channelId: AgoraManager.channelName,
-    );
+        uid: _remoteID,
+        channelId: AgoraManager.channelName,
+      );
     }else{
       return Text(
         "Calling....",style: Theme.of(context).textTheme.headline6,
