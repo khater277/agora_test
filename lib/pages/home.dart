@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:agora_test/agora_server.dart';
 import 'package:agora_test/api.dart';
 import 'package:agora_test/pages/video_call.dart';
 import 'package:agora_test/utils/app_brain.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,16 +26,28 @@ class _HomeScreenState extends State<HomeScreen> {
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification!.body}');
       }
-      // Navigator.of(context).push(
-      //     MaterialPageRoute(builder: (BuildContext context) {
-      //       return VideoCallScreen(channelName: message.data['cannelName'],);
-      //     })
-      // );
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (BuildContext context) {
+            return VideoCallScreen(
+              channelName: message.data['channelName'],
+              token: message.data['token'],
+              uid: 4456,
+            );
+          })
+      );
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(message.data);
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
+
+    final player = AudioPlayer();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Fluent App"),
@@ -64,12 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 IconButton(
                   onPressed: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => VideoCallScreen()));
                     AgoraHelper.getToken().then((value){
                       print("GET DATA SUCCESS ${value.data['token']}");
+                      DioHelper.pushNotification(
+                          token: value.data['token'],
+                          channelName: 'asd');
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -81,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     }).catchError((error){
                       print("GET DATA ERROR ${error.toString()}");
                     });
+
                   },
                   icon: const Icon(
                     Icons.video_call,
@@ -89,12 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.teal,
                 ),
                 IconButton(
-                  onPressed: () {
-
-                    // Navigator.push(
-                    // context,
-                    // MaterialPageRoute(
-                    // builder: (context) => AudioCallScreen()));
+                  onPressed: () async{
+                    await player.stop();
                   },
                   icon: const Icon(
                     Icons.phone,

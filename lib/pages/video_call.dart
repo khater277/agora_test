@@ -1,5 +1,6 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_test/utils/app_brain.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
@@ -19,6 +20,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   late int _remoteID = 0;
   late RtcEngine _engine;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
 
   Future<void> initAgora()async{
@@ -32,7 +34,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             },
             userJoined: (int uid,int elapsed){
               print("userJoined id $uid elapsed $elapsed");
-              setState(()=>_remoteID = uid);
+              setState(() {
+                _audioPlayer.stop();
+                _remoteID = uid;
+              });
             },
             userOffline: (int uid,UserOfflineReason reason){
               print("userOffline id $uid reason ${reason.toString()}");
@@ -51,15 +56,24 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
   }
 
+
+  void playRingtone()async{
+    await _audioPlayer.play(AssetSource('sounds/asd.ogg'));
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+  }
+
   @override
   void initState() {
     initAgora();
+    playRingtone();
     super.initState();
   }
 
   @override
   void dispose() {
     _engine.leaveChannel();
+    _audioPlayer.dispose();
+
     super.dispose();
   }
   @override
