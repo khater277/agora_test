@@ -23,7 +23,6 @@ class DioHelper {
   required String token,
   required String channelName,
 }){
-
     Map<String,dynamic> data = {
       "to":"f6Pr-8neTaiBaNNwIQyzU5:APA91bEwD-BJm_dCDWqUEqx8AsfaFe8kVEHPuoxQJ2_TGATia1Abt2qOLn7BFUCFFerHHU3io8QL8-mJKnd2xXDudIDHQjUlZvS5rTltHGbzQbmEVK0h63ir9ItYpz7lQZ-DDbd86yhD",
       "priority":"high",

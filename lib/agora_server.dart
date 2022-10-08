@@ -7,7 +7,7 @@ class AgoraHelper {
     dio = Dio(
       BaseOptions(
           // baseUrl: 'http://192.168.1.5:8080/',
-          baseUrl: 'http://192.168.1.5:8082/',
+          baseUrl: 'http://192.168.1.2:8082/',
           receiveDataWhenStatusError: true,
           headers: {
             'Content-Type': "application/json",
@@ -15,16 +15,13 @@ class AgoraHelper {
     );
   }
 
-  static Future<Response> getToken(){
-
-    return dio!.post("fetch_rtc_token",data: {
-      'channelName':"asd",
+  static Future<Response> getToken() {
+    return dio!.post("fetch_rtc_token", data: {
+      'channelName': "asd",
       // 'uid':2,
       // 'role':1,
     });
-    
-    // return dio!.get("fetch_rtc_token");
-        
-  }
 
+    // return dio!.get("fetch_rtc_token");
+  }
 }

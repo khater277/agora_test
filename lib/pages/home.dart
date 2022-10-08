@@ -9,6 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_channel.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -24,17 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Message data: ${message.data}');
 
       if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification!.body}');
+        print(
+            'Message also contained a notification: ${message.notification!.body}');
       }
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) {
-            return VideoCallScreen(
-              channelName: message.data['channelName'],
-              token: message.data['token'],
-              uid: 4456,
-            );
-          })
-      );
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return VideoCallScreen(
+          channelName: message.data['channelName'],
+          token: message.data['token'],
+          uid: 4456,
+        );
+      }));
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -45,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final player = AudioPlayer();
 
     return Scaffold(
@@ -55,21 +55,16 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(150.0),
-            child: Image.network(
-              "https://play-lh.googleusercontent.com/ZpQcKuCwbQnrCgNpsyUsgDjuBUnpcIBkVrPSDKS9LOJTAW1kxMsu6cLltOSUODjiEQ=w500-h280-rw",
-              height: 200.0,
-              width: 200.0,
-              fit: BoxFit.cover,
-            ),
+          const Icon(
+            Icons.video_call_outlined,
+            size: 200,
           ),
           Text(
-            "Amar Awni",
+            "Khater",
             style: Theme.of(context).textTheme.headline3,
           ),
           Text(
-            "+90 555 000 00 00",
+            "+201000482644",
             style: Theme.of(context).textTheme.headline6,
           ),
           Padding(
@@ -79,23 +74,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 IconButton(
                   onPressed: () {
-                    AgoraHelper.getToken().then((value){
+                    AgoraHelper.getToken().then((value) {
                       print("GET DATA SUCCESS ${value.data['token']}");
                       DioHelper.pushNotification(
-                          token: value.data['token'],
-                          channelName: 'asd');
+                          token: value.data['token'], channelName: 'asd');
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => VideoCallScreen(
-                                token: value.data['token'],
-                                channelName: 'asd',
-                                uid: 3,
-                              )));
-                    }).catchError((error){
+                                    token: value.data['token'],
+                                    channelName: 'asd',
+                                    uid: 3,
+                                  )));
+                    }).catchError((error) {
                       print("GET DATA ERROR ${error.toString()}");
                     });
-
                   },
                   icon: const Icon(
                     Icons.video_call,
@@ -104,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.teal,
                 ),
                 IconButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     await player.stop();
                   },
                   icon: const Icon(
